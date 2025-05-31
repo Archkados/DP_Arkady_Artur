@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход в систему</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 60px auto;
+            background-color: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        form p {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #333;
+            margin: 0 0 5px 40px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 75%;
+            padding: 7px 10px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-left: 40px;
+        }
+
+        .btn {
+            width: 50%;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-left: 100px;
+        }
+
+        .btn:hover {
+            background-color: #357abd;
+        }
+
+        .error-message {
+            margin-top: 12px;
+            color: #e74c3c;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Вход в систему</h2>
+        <form method="post">
+            {% csrf_token %}
+            <p>
+                <label for="id_username">Имя пользователя:</label>
+                <input type="text" name="username" autofocus required id="id_username">
+            </p>
+            <p>
+                <label for="id_password">Пароль:</label>
+                <input type="password" name="password" required id="id_password">
+            </p>
+            <button type="submit" class="btn">Войти</button>
+        </form>
+
+        {% if form.errors %}
+            <p class="error-message">Неверный логин или пароль</p>
+        {% endif %}
+    </div>
+</body>
+</html>

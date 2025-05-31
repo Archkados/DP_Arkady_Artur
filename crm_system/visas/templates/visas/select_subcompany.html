@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подкомпании компании {{ company.name }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f9fc;
+        }
+        .container {
+            display: flex;
+        }
+        .sidebar {
+            width: 80px;
+            background-color: #e8f1f9;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .sidebar a {
+    margin: 15px 0;
+    color: #333;
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    transition: background 0.3s;
+    position: relative;
+}
+
+.sidebar a img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 5px; 
+}
+
+.sidebar a span {
+    font-size: 12px;
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #333;
+}
+
+.sidebar a:hover {
+    background: #d0e2f2;
+}
+
+.sidebar a:hover span {
+    color: #007bff;
+}
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        th a, td a i {
+            color: #007bff;
+            transition: color 0.3s;
+        }
+
+        th a:hover, td a i:hover {
+            color: #f44336; 
+        }
+    </style>
+    <script>
+        function confirmDelete(form) {
+            if (confirm("Вы уверены, что хотите удалить эту компанию?")) {
+                form.submit();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="{% url 'view_companies' %}">
+                <img src="{% static 'images/back_icon.png' %}" alt="Документы">
+                <span>Назад</span>
+            </a>
+        </div>
+        <div class="content">
+            <div class="header">
+                <h1>Подкомпании компании {{ company.name }} ({{ subcompanies.count }})</h1>
+                <form method="post" action="{% url 'view_subcompanies' company.id %}">
+                    {% csrf_token %}
+                    {{ form.name.label_tag }} {{ form.name }}
+                    <button type="submit" class="btn">Добавить подкомпанию</button>
+                </form>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subcompany in subcompanies %}
+                    <tr>
+                        <td>{{ subcompany.name }}</td>
+                        <td>
+                            <a href="{% url 'subcompany_details' subcompany.id %}"><i class="fas fa-info-circle" style="font-size: 20px;"></i></a>
+                            <form method="post" action="{% url 'delete_subcompany' subcompany.id %}" style="display:inline;" onsubmit="event.preventDefault(); confirmDelete(this);">
+                                {% csrf_token %}
+                                <button type="submit" style="border: none; background: none; cursor: pointer; color: #007bff; font-size: 20px;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 20px;">Нет данных</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

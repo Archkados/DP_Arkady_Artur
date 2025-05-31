@@ -1,0 +1,112 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пользователей</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+
+        ul.user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.user-list li {
+            background-color: #f1f5f9;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .action-icons a {
+            color: #007bff;
+            font-size: 16px;
+            margin-left: 10px;
+            transition: color 0.3s;
+        }
+
+        .action-icons a:hover {
+            color: #f44336;
+        }
+
+        .back-btn {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .group-list {
+            font-style: italic;
+            color: #555;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Список пользователей</h2>
+
+        <ul class="user-list">
+            {% for user in users %}
+                <li>
+                    <div class="user-info">
+                        {{ user.username }} — {{ user.email }}
+                        {% if user.groups.all %}
+                            <span class="group-list">Группы:
+                                {% for group in user.groups.all %}
+                                    {{ group.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </span>
+                        {% else %}
+                            <span class="group-list">Нет группы</span>
+                        {% endif %}
+                    </div>
+                    <div class="action-icons">
+                        <a href="{% url 'edit_user' user.id %}" title="Редактировать"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'delete_user' user.id %}" title="Удалить"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
+            {% empty %}
+                <li><em>Пользователей нет.</em></li>
+            {% endfor %}
+        </ul>
+
+        <div class="back-btn">
+            <a href="{% url 'glav' %}" class="btn btn-secondary">Назад</a>
+        </div>
+    </div>
+</body>
+</html>

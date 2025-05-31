@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание заявки для {{ subcompany.name }}</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f9fc;
+        }
+
+        .sidebar {
+            width: 80px;
+            background-color: #e8f1f9;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar a {
+            margin: 15px 0;
+            color: #333;
+            font-size: 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            transition: background 0.3s;
+            position: relative;
+        }
+
+        .sidebar a img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a span {
+            font-size: 12px;
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+        }
+
+        .sidebar a:hover {
+            background: #d0e2f2;
+        }
+
+        .sidebar a:hover span {
+            color: #007bff;
+        }
+
+        .content-container {
+            margin-left: 100px;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-container input,
+        .form-container select,
+        .form-container textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+    </style>
+
+    <script>
+        function toggleRouteInput() {
+            document.getElementById('new-route-form').style.display = 'block';
+        }
+
+        function addRoute() {
+            const routeName = document.getElementById('new-route-name').value;
+            if (routeName) {
+                fetch('/add-route/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({ name: routeName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const routeSelect = document.getElementById('id_route');
+                        const newOption = document.createElement('option');
+                        newOption.value = data.route_id;
+                        newOption.textContent = routeName;
+                        routeSelect.appendChild(newOption);
+                        routeSelect.value = data.route_id;
+                        document.getElementById('new-route-form').style.display = 'none';
+                        document.getElementById('new-route-name').value = '';
+                    } else {
+                        alert('Ошибка при добавлении маршрута');
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="{% url 'select_freight_company' %}">
+            <img src="{% static 'images/back_icon.png' %}" alt="Документы">
+            <span>Назад</span>
+        </a>
+    </div>
+
+    <div class="content-container">
+        <div class="header">
+            <h1>Создание заявки для подкомпании: {{ subcompany.name }}</h1>
+        </div>
+
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Грузополучатель, адрес, телефон, контактное лицо:</label>
+                    {{ form.consignee }}
+                </div>
+                <div class="form-group">
+                    <label>Адрес пункта погрузки:</label>
+                    {{ form.loading_address }}
+                </div>
+                <div class="form-group">
+                    <label>Контактное лицо и телефон Отправителя:</label>
+                    {{ form.sender_contact }}
+                </div>
+                <div class="form-group">
+                    <label>Дата погрузки:</label>
+                    {{ form.loading_date }}
+                </div>
+                <div class="form-group">
+                    <label>Маршрут перевозки груза:</label>
+                    {{ form.route }}
+                    <button type="button" onclick="toggleRouteInput()">+</button>
+                </div>
+                <div id="new-route-form" style="display: none;">
+                    <input type="text" id="new-route-name" placeholder="Введите новый маршрут">
+                    <button type="button" onclick="addRoute()">Сохранить</button>
+                </div>
+                <div class="form-group">
+                    <label>Срок доставки:</label>
+                    <input type="text" value="12-14 дней">
+                </div>
+                <div class="form-group">
+                    <label>Особенности транспортировки груза:</label>
+                    <textarea>Грузить в один ярус, на наши коробки не ставить коробки и паллеты других отправителей.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Наименование груза:</label>
+                    {{ form.cargo_name }}
+                </div>
+                <div class="form-group">
+                    <label>Вес, размеры, объём, стоимость:</label>
+                    {{ form.cargo_details }}
+                </div>
+                <div class="form-group">
+                    <label>Стоимость фрахта:</label>
+                    {{ form.freight_cost }}
+                </div>
+                <div class="form-group">
+                    <label>Условия оплаты:</label>
+                    <input type="text" value="100% оплата по факту прибытия">
+                </div>
+                <div class="form-group">
+                    <label>Страхование груза:</label>
+                    {{ form.insurance }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_freight_company_info">Реквизиты грузоперевозчика:</label>
+                    <textarea readonly>{{ freight_company.contact_info|default:"Не указаны" }}</textarea>
+                </div>
+
+                <div class="btn-container">
+                    <button type="submit" class="btn">Создать заявку</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

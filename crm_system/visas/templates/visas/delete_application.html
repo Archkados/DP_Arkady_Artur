@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удалить заявку</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Вы уверены, что хотите удалить заявку?</h2>
+        <p><strong>Номер заявки:</strong> {{ application.id }}</p>
+        <p><strong>Грузоотправитель:</strong> {{ application.sender_contact|default:"Не указано" }}</p>
+        <p><strong>Грузополучатель:</strong> {{ application.consignee|default:"Не указано" }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+            <a href="{% url 'view_requests' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</body>
+</html>

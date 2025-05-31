@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Предварительный просмотр</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h2 { text-align: center; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+        @media print {
+            button {
+                display: none;
+            }
+
+            .print-hide {
+                display: none;
+            }
+            body * {
+                visibility: hidden;
+            }
+            .print-content, .print-content * {
+                visibility: visible;
+            }
+            .print-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-content">
+    <h1>ТОО «Global World Logistics»</h1>
+    <h2>Заявка №{{ request_obj.id }} от {{ request_obj.creation_date|date:"d F Y" }} к Договору №{{ request_obj.contract_number }}</h2>
+
+    <table>
+        <tr>
+            <th>Параметр</th>
+            <th>Информация</th>
+        </tr>
+        <tr>
+            <td><strong>Грузоотправитель:</strong></td>
+            <td>{{ request_obj.sender_contact|default:"Не указано" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Грузополучатель:</strong></td>
+            <td>{{ request_obj.consignee|default:"Не указано" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Дата и время погрузки:</strong></td>
+            <td>{{ request_obj.loading_date|default:"Не указано"|date:"d/m/Y" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Маршрут перевозки:</strong></td>
+            <td>{{ request_obj.route|default:"Не указано" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Срок доставки:</strong></td>
+            <td>{{ request_obj.delivery_term|default:"Не указан" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Наименование груза:</strong></td>
+            <td>{{ request_obj.cargo_name|default:"Не указано" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Особенности транспортировки:</strong></td>
+            <td>{{ request_obj.transportation_features|default:"Не указано" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Стоимость фрахта:</strong></td>
+            <td>{{ request_obj.freight_cost|default:"Не указана" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Страхование груза:</strong></td>
+            <td>{% if request_obj.insurance %}Да{% else %}Нет{% endif %}</td>
+        </tr>
+
+        <tr>
+            <td><strong>Реквизиты компании:</strong></td>
+            <td>{{ request_obj.freight_company.contact_info|default:"Не указаны" }}</td>
+        </tr>
+    </table>
+</div>
+
+<button onclick="window.print()">Печать</button>
+
+</body>
+</html>

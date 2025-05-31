@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали заявки</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9fafb;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+            gap: 20px;
+        }
+
+        .left-column {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%; 
+        }
+
+        .section h4, .section h5 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .section ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .section ul li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .details-block {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .details-block h2 {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .details-block p {
+            margin-bottom: 12px;
+            font-size: 15px;
+            display: flex;
+        }
+
+        .details-block p strong {
+            font-weight: 600;
+            width: 120px;
+            display: inline-block;
+        }
+
+        .details-block p span {
+            flex: 1;
+        }
+
+        .details-block ul {
+            padding-left: 0;
+            margin-top: 15px;
+        }
+
+        .details-block ul li {
+            list-style-type: none;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .back-btn .btn {
+            width: auto;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .list-group-item {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        #cargo-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-column">
+            <div class="section">
+                <h5>Добавить этап</h5>
+                <form id="add-stage-template-form">
+                    <input type="text" name="stage_name" id="new_stage_name" class="form-control" placeholder="Название этапа">
+                    <button type="submit" class="btn btn-primary mt-2">Создать</button>
+                </form>
+
+                <form id="add-stage-from-template-form" class="mt-3">
+                    <select name="template_id" id="stage_template" class="form-control">
+                        <option value="">Выберите этап</option>
+                        {% for template in stage_templates %}
+                            <option value="{{ template.id }}">{{ template.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-success mt-2">Добавить к заявке</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h4>Добавить информацию о грузе</h4>
+                <form id="add-cargo-form" enctype="multipart/form-data">
+                    <input type="text" name="name" id="cargo_name" class="form-control" placeholder="Название груза" required>
+                    <input type="file" name="file" id="cargo_file" class="form-control mt-2" required>
+                    <button type="submit" class="btn btn-primary mt-2">Добавить</button>
+                </form>
+                <h4 class="mt-3">Информация о грузе</h4>
+                <ul class="list-group" id="cargo-list">
+                    {% for cargo in cargo_infos %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-truncate" style="max-width: 180px;">{{ cargo.name }}</span>
+                            <a href="{{ cargo.file.url }}" target="_blank">Скачать</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="right-column">
+            <div class="details-block">
+                <h2>Детали заявки</h2>
+                <p><strong>Номер машины:</strong> <span>{{ tracking.vehicle.number }}</span></p>
+                <p><strong>Статус:</strong> <span class="text-success">{{ tracking.status|default:"Нет статуса" }}</span></p>
+                <p><strong>Номер прицепа:</strong> 
+                    <span>
+                        {% if tracking.vehicle.trailer_number %}
+                            {{ tracking.vehicle.trailer_number.number }}
+                        {% else %}
+                            Нет прицепа
+                        {% endif %}
+                    </span>
+                </p>
+                <p><strong>Дата выезда:</strong> <span>{{ tracking.departure_date|date:"d/m/Y"|default:"--/--/----" }}</span></p>
+                <p><strong>Маршрут:</strong> <span>{{ tracking.departure }} - {{ tracking.destination }}</span></p>
+                
+                <h4 class="mt-4">Этапы отправки</h4>
+                <ul class="list-group">
+                    {% for stage in stages %}
+                        <li class="list-group-item">{{ stage.template.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-btn">
+        <a href="{% url 'tracking_list' %}" class="btn btn-secondary">Назад</a>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#add-cargo-form").submit(function(event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: "{% url 'add_cargo_info' tracking.id %}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    success: function(response) {
+                        if (response.status === "success") {
+                            $("#cargo-list").append(
+                                `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span class="text-truncate" style="max-width: 180px;">${response.name}</span>
+                                    <a href="${response.file_url}" target="_blank">Скачать</a>
+                                </li>`
+                            );
+                            $("#cargo_name").val('');
+                            $("#cargo_file").val('');
+                        } else {
+                            alert("Ошибка: " + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert("Ошибка загрузки: " + xhr.responseText);
+                    }
+                });
+            });
+
+            $("#add-stage-template-form").submit(function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: "{% url 'add_stage_template' %}",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    success: function(response) {
+                        if (response.status === "success") {
+                            location.reload();
+                        }
+                    }
+                });
+            });
+
+            $("#add-stage-from-template-form").submit(function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: "{% url 'add_stage_from_template' tracking.id %}",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    success: function(response) {
+                        if (response.status === "success") {
+                            location.reload();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

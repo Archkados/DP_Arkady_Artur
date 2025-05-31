@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Данные подкомпании {{ subcompany.name }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f9fc;
+        }
+        .container {
+            display: flex;
+        }
+        .sidebar {
+            width: 80px;
+            background-color: #e8f1f9;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .sidebar a {
+    margin: 15px 0;
+    color: #333;
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    transition: background 0.3s;
+    position: relative;
+}
+
+.sidebar a img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 5px; 
+}
+
+.sidebar a span {
+    font-size: 12px;
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #333;
+}
+
+.sidebar a:hover {
+    background: #d0e2f2;
+}
+
+.sidebar a:hover span {
+    color: #007bff;
+}
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-container {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+            max-height: 75vh;
+            overflow-y: auto; 
+        }
+        .form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block; 
+}
+
+.form-container input,
+.form-container select,
+.form-container textarea {
+    width: 75%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="{% url 'view_subcompanies' subcompany.company.id %}">
+                <img src="{% static 'images/back_icon.png' %}" alt="Документы">
+                <span>Назад</span>
+            </a>
+        </div>
+        <div class="content">
+            <div class="header">
+                <h1>Редактирование подкомпании: {{ subcompany.name }}</h1>
+            </div>
+            <div class="form-container">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="btn-container">
+                        <button type="submit" class="btn">Сохранить данные</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
