@@ -38,7 +38,7 @@
 1. Клонируйте репозиторий:
 
 ```bash
-git clone [ссылка-на-репозиторий]
+git clone https://github.com/Archkados/DP_Arkady_Artur.git
 ```
 
 2. Перейдите в директорию проекта:
