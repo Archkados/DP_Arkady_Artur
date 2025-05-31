@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-zg8_fnc(if$^5qxqqse6@u2qq+8h+$1wl*ei5flx$irde715l1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['157.245.123.144', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -134,3 +134,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+CSRF_TRUSTED_ORIGINS = ['http://157.245.123.144:8999']
